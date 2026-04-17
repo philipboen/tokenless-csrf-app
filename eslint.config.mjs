@@ -42,7 +42,7 @@ export default antfu(
     },
   },
   {
-    files: ["src/routes/**/*.tsx"],
+    files: ["src/**/*.{tsx,ts}"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
