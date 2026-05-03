@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as authSignupIndexRouteImport } from './routes/(auth)/signup/index'
+import { Route as authSigninIndexRouteImport } from './routes/(auth)/signin/index'
+import { Route as authSignupCheckEmailIndexRouteImport } from './routes/(auth)/signup/check-email/index'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -22,31 +25,65 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authSignupIndexRoute = authSignupIndexRouteImport.update({
+  id: '/(auth)/signup/',
+  path: '/signup/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSigninIndexRoute = authSigninIndexRouteImport.update({
+  id: '/(auth)/signin/',
+  path: '/signin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSignupCheckEmailIndexRoute =
+  authSignupCheckEmailIndexRouteImport.update({
+    id: '/(auth)/signup/check-email/',
+    path: '/signup/check-email/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/signin/': typeof authSigninIndexRoute
+  '/signup/': typeof authSignupIndexRoute
+  '/signup/check-email/': typeof authSignupCheckEmailIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/signin': typeof authSigninIndexRoute
+  '/signup': typeof authSignupIndexRoute
+  '/signup/check-email': typeof authSignupCheckEmailIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/(auth)/signin/': typeof authSigninIndexRoute
+  '/(auth)/signup/': typeof authSignupIndexRoute
+  '/(auth)/signup/check-email/': typeof authSignupCheckEmailIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about'
+  fullPaths: '/' | '/about' | '/signin/' | '/signup/' | '/signup/check-email/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about'
-  id: '__root__' | '/' | '/about'
+  to: '/' | '/about' | '/signin' | '/signup' | '/signup/check-email'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/(auth)/signin/'
+    | '/(auth)/signup/'
+    | '/(auth)/signup/check-email/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  authSigninIndexRoute: typeof authSigninIndexRoute
+  authSignupIndexRoute: typeof authSignupIndexRoute
+  authSignupCheckEmailIndexRoute: typeof authSignupCheckEmailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +102,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/signup/': {
+      id: '/(auth)/signup/'
+      path: '/signup'
+      fullPath: '/signup/'
+      preLoaderRoute: typeof authSignupIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/signin/': {
+      id: '/(auth)/signin/'
+      path: '/signin'
+      fullPath: '/signin/'
+      preLoaderRoute: typeof authSigninIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/signup/check-email/': {
+      id: '/(auth)/signup/check-email/'
+      path: '/signup/check-email'
+      fullPath: '/signup/check-email/'
+      preLoaderRoute: typeof authSignupCheckEmailIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  authSigninIndexRoute: authSigninIndexRoute,
+  authSignupIndexRoute: authSignupIndexRoute,
+  authSignupCheckEmailIndexRoute: authSignupCheckEmailIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

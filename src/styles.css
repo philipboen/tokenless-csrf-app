@@ -8,7 +8,7 @@
 
 @theme inline {
   --font-heading: var(--font-serif);
-  --font-serif: 'Plus Jakarta Sans Variable', sans-serif;
+  --font-serif: "Plus Jakarta Sans Variable", sans-serif;
   --font-sans: "Figtree Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -124,9 +124,21 @@
     @apply border-border outline-ring/50;
   }
   body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     @apply bg-background text-foreground;
   }
   html {
     @apply font-sans;
+  }
+}
+
+@layer utilities {
+  .max-container {
+    @apply mx-auto max-w-400; /* 1600px | 1440px */
+  }
+
+  .flexBetween {
+    @apply flex justify-between items-center;
   }
 }
