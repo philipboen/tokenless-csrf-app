@@ -28,3 +28,16 @@ export const registerSchema = z
   });
 
 export type SignUpValues = z.infer<typeof registerSchema>;
+
+export const loginSchema = z.object({
+  email: requiredString,
+  password: requiredString,
+});
+
+export type LoginValues = z.infer<typeof loginSchema>;
+
+export const checkEmailSchema = z.object({
+  type: z.enum(["account-creation", "forgot-password"]),
+});
+
+export type CheckEmailValues = z.infer<typeof checkEmailSchema>;

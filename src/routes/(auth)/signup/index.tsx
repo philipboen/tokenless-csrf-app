@@ -58,7 +58,7 @@ function SignupRC() {
           .json<ApiResponse<{ id: string; surname: string }>>();
 
         form.reset();
-        navigate({ to: "/signup/check-email" });
+        navigate({ to: "/check-email", search: { type: "account-creation" } });
       } catch (error) {
         if (isHTTPError(error)) {
           const data = error.data as ApiErrorResponse;
@@ -92,7 +92,7 @@ function SignupRC() {
       switchButtonHref="/signin"
       switchButtonDescription="Already have an account?"
     >
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
           <div className="space-y-4">
             <div className="flexBetween gap-2 flex-col sm:flex-row space-y-4 sm:space-y-0">

@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as authSignupIndexRouteImport } from './routes/(auth)/signup/index'
 import { Route as authSigninIndexRouteImport } from './routes/(auth)/signin/index'
-import { Route as authSignupCheckEmailIndexRouteImport } from './routes/(auth)/signup/check-email/index'
+import { Route as authCheckEmailIndexRouteImport } from './routes/(auth)/check-email/index'
+import { Route as authSigninForgotPasswordRouteImport } from './routes/(auth)/signin/forgot-password'
+import { Route as authSigninVerifyEmailTokenRouteImport } from './routes/(auth)/signin/verify-email/$token'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -23,6 +26,11 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authSignupIndexRoute = authSignupIndexRouteImport.update({
@@ -35,55 +43,97 @@ const authSigninIndexRoute = authSigninIndexRouteImport.update({
   path: '/signin/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authSignupCheckEmailIndexRoute =
-  authSignupCheckEmailIndexRouteImport.update({
-    id: '/(auth)/signup/check-email/',
-    path: '/signup/check-email/',
+const authCheckEmailIndexRoute = authCheckEmailIndexRouteImport.update({
+  id: '/(auth)/check-email/',
+  path: '/check-email/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSigninForgotPasswordRoute =
+  authSigninForgotPasswordRouteImport.update({
+    id: '/(auth)/signin/forgot-password',
+    path: '/signin/forgot-password',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const authSigninVerifyEmailTokenRoute =
+  authSigninVerifyEmailTokenRouteImport.update({
+    id: '/(auth)/signin/verify-email/$token',
+    path: '/signin/verify-email/$token',
     getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/signin/forgot-password': typeof authSigninForgotPasswordRoute
+  '/check-email/': typeof authCheckEmailIndexRoute
   '/signin/': typeof authSigninIndexRoute
   '/signup/': typeof authSignupIndexRoute
-  '/signup/check-email/': typeof authSignupCheckEmailIndexRoute
+  '/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/signin/forgot-password': typeof authSigninForgotPasswordRoute
+  '/check-email': typeof authCheckEmailIndexRoute
   '/signin': typeof authSigninIndexRoute
   '/signup': typeof authSignupIndexRoute
-  '/signup/check-email': typeof authSignupCheckEmailIndexRoute
+  '/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/(auth)/signin/forgot-password': typeof authSigninForgotPasswordRoute
+  '/(auth)/check-email/': typeof authCheckEmailIndexRoute
   '/(auth)/signin/': typeof authSigninIndexRoute
   '/(auth)/signup/': typeof authSignupIndexRoute
-  '/(auth)/signup/check-email/': typeof authSignupCheckEmailIndexRoute
+  '/(auth)/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/signin/' | '/signup/' | '/signup/check-email/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/dashboard/'
+    | '/signin/forgot-password'
+    | '/check-email/'
+    | '/signin/'
+    | '/signup/'
+    | '/signin/verify-email/$token'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/signin' | '/signup' | '/signup/check-email'
+  to:
+    | '/'
+    | '/about'
+    | '/dashboard'
+    | '/signin/forgot-password'
+    | '/check-email'
+    | '/signin'
+    | '/signup'
+    | '/signin/verify-email/$token'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/dashboard/'
+    | '/(auth)/signin/forgot-password'
+    | '/(auth)/check-email/'
     | '/(auth)/signin/'
     | '/(auth)/signup/'
-    | '/(auth)/signup/check-email/'
+    | '/(auth)/signin/verify-email/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  authSigninForgotPasswordRoute: typeof authSigninForgotPasswordRoute
+  authCheckEmailIndexRoute: typeof authCheckEmailIndexRoute
   authSigninIndexRoute: typeof authSigninIndexRoute
   authSignupIndexRoute: typeof authSignupIndexRoute
-  authSignupCheckEmailIndexRoute: typeof authSignupCheckEmailIndexRoute
+  authSigninVerifyEmailTokenRoute: typeof authSigninVerifyEmailTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/(auth)/signup/': {
       id: '/(auth)/signup/'
       path: '/signup'
@@ -116,11 +173,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authSigninIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(auth)/signup/check-email/': {
-      id: '/(auth)/signup/check-email/'
-      path: '/signup/check-email'
-      fullPath: '/signup/check-email/'
-      preLoaderRoute: typeof authSignupCheckEmailIndexRouteImport
+    '/(auth)/check-email/': {
+      id: '/(auth)/check-email/'
+      path: '/check-email'
+      fullPath: '/check-email/'
+      preLoaderRoute: typeof authCheckEmailIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/signin/forgot-password': {
+      id: '/(auth)/signin/forgot-password'
+      path: '/signin/forgot-password'
+      fullPath: '/signin/forgot-password'
+      preLoaderRoute: typeof authSigninForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/signin/verify-email/$token': {
+      id: '/(auth)/signin/verify-email/$token'
+      path: '/signin/verify-email/$token'
+      fullPath: '/signin/verify-email/$token'
+      preLoaderRoute: typeof authSigninVerifyEmailTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -129,9 +200,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+  authSigninForgotPasswordRoute: authSigninForgotPasswordRoute,
+  authCheckEmailIndexRoute: authCheckEmailIndexRoute,
   authSigninIndexRoute: authSigninIndexRoute,
   authSignupIndexRoute: authSignupIndexRoute,
-  authSignupCheckEmailIndexRoute: authSignupCheckEmailIndexRoute,
+  authSigninVerifyEmailTokenRoute: authSigninVerifyEmailTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
