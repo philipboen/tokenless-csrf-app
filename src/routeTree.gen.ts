@@ -10,17 +10,24 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
-import { Route as authSignupIndexRouteImport } from './routes/(auth)/signup/index'
-import { Route as authSigninIndexRouteImport } from './routes/(auth)/signin/index'
-import { Route as authCheckEmailIndexRouteImport } from './routes/(auth)/check-email/index'
-import { Route as authSigninForgotPasswordRouteImport } from './routes/(auth)/signin/forgot-password'
-import { Route as authSigninVerifyEmailTokenRouteImport } from './routes/(auth)/signin/verify-email/$token'
+import { Route as ProtectedAccountRouteImport } from './routes/_protected/account'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
+import { Route as authAuthRouteRouteImport } from './routes/(auth)/_auth/route'
+import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
+import { Route as authAuthSignupIndexRouteImport } from './routes/(auth)/_auth/signup/index'
+import { Route as authAuthSigninIndexRouteImport } from './routes/(auth)/_auth/signin/index'
+import { Route as authAuthCheckEmailIndexRouteImport } from './routes/(auth)/_auth/check-email/index'
+import { Route as authAuthSigninVerifyEmailTokenRouteImport } from './routes/(auth)/_auth/signin/verify-email/$token'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedRouteRoute = ProtectedRouteRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,77 +35,91 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
+const ProtectedAccountRoute = ProtectedAccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => ProtectedRouteRoute,
+} as any)
+const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
+  id: '/(auth)/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authAuthRouteRoute = authAuthRouteRouteImport.update({
+  id: '/(auth)/_auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedDashboardIndexRoute = ProtectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => ProtectedRouteRoute,
 } as any)
-const authSignupIndexRoute = authSignupIndexRouteImport.update({
-  id: '/(auth)/signup/',
+const authAuthSignupIndexRoute = authAuthSignupIndexRouteImport.update({
+  id: '/signup/',
   path: '/signup/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authAuthRouteRoute,
 } as any)
-const authSigninIndexRoute = authSigninIndexRouteImport.update({
-  id: '/(auth)/signin/',
+const authAuthSigninIndexRoute = authAuthSigninIndexRouteImport.update({
+  id: '/signin/',
   path: '/signin/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authAuthRouteRoute,
 } as any)
-const authCheckEmailIndexRoute = authCheckEmailIndexRouteImport.update({
-  id: '/(auth)/check-email/',
+const authAuthCheckEmailIndexRoute = authAuthCheckEmailIndexRouteImport.update({
+  id: '/check-email/',
   path: '/check-email/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => authAuthRouteRoute,
 } as any)
-const authSigninForgotPasswordRoute =
-  authSigninForgotPasswordRouteImport.update({
-    id: '/(auth)/signin/forgot-password',
-    path: '/signin/forgot-password',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const authSigninVerifyEmailTokenRoute =
-  authSigninVerifyEmailTokenRouteImport.update({
-    id: '/(auth)/signin/verify-email/$token',
+const authAuthSigninVerifyEmailTokenRoute =
+  authAuthSigninVerifyEmailTokenRouteImport.update({
+    id: '/signin/verify-email/$token',
     path: '/signin/verify-email/$token',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => authAuthRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/dashboard/': typeof DashboardIndexRoute
-  '/signin/forgot-password': typeof authSigninForgotPasswordRoute
-  '/check-email/': typeof authCheckEmailIndexRoute
-  '/signin/': typeof authSigninIndexRoute
-  '/signup/': typeof authSignupIndexRoute
-  '/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
+  '/forgot-password': typeof authForgotPasswordRoute
+  '/account': typeof ProtectedAccountRoute
+  '/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/check-email/': typeof authAuthCheckEmailIndexRoute
+  '/signin/': typeof authAuthSigninIndexRoute
+  '/signup/': typeof authAuthSignupIndexRoute
+  '/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/dashboard': typeof DashboardIndexRoute
-  '/signin/forgot-password': typeof authSigninForgotPasswordRoute
-  '/check-email': typeof authCheckEmailIndexRoute
-  '/signin': typeof authSigninIndexRoute
-  '/signup': typeof authSignupIndexRoute
-  '/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
+  '/forgot-password': typeof authForgotPasswordRoute
+  '/account': typeof ProtectedAccountRoute
+  '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/check-email': typeof authAuthCheckEmailIndexRoute
+  '/signin': typeof authAuthSigninIndexRoute
+  '/signup': typeof authAuthSignupIndexRoute
+  '/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_protected': typeof ProtectedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/dashboard/': typeof DashboardIndexRoute
-  '/(auth)/signin/forgot-password': typeof authSigninForgotPasswordRoute
-  '/(auth)/check-email/': typeof authCheckEmailIndexRoute
-  '/(auth)/signin/': typeof authSigninIndexRoute
-  '/(auth)/signup/': typeof authSignupIndexRoute
-  '/(auth)/signin/verify-email/$token': typeof authSigninVerifyEmailTokenRoute
+  '/(auth)/_auth': typeof authAuthRouteRouteWithChildren
+  '/(auth)/forgot-password': typeof authForgotPasswordRoute
+  '/_protected/account': typeof ProtectedAccountRoute
+  '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/(auth)/_auth/check-email/': typeof authAuthCheckEmailIndexRoute
+  '/(auth)/_auth/signin/': typeof authAuthSigninIndexRoute
+  '/(auth)/_auth/signup/': typeof authAuthSignupIndexRoute
+  '/(auth)/_auth/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/forgot-password'
+    | '/account'
     | '/dashboard/'
-    | '/signin/forgot-password'
     | '/check-email/'
     | '/signin/'
     | '/signup/'
@@ -107,8 +128,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/forgot-password'
+    | '/account'
     | '/dashboard'
-    | '/signin/forgot-password'
     | '/check-email'
     | '/signin'
     | '/signup'
@@ -116,24 +138,24 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_protected'
     | '/about'
-    | '/dashboard/'
-    | '/(auth)/signin/forgot-password'
-    | '/(auth)/check-email/'
-    | '/(auth)/signin/'
-    | '/(auth)/signup/'
-    | '/(auth)/signin/verify-email/$token'
+    | '/(auth)/_auth'
+    | '/(auth)/forgot-password'
+    | '/_protected/account'
+    | '/_protected/dashboard/'
+    | '/(auth)/_auth/check-email/'
+    | '/(auth)/_auth/signin/'
+    | '/(auth)/_auth/signup/'
+    | '/(auth)/_auth/signin/verify-email/$token'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
-  authSigninForgotPasswordRoute: typeof authSigninForgotPasswordRoute
-  authCheckEmailIndexRoute: typeof authCheckEmailIndexRoute
-  authSigninIndexRoute: typeof authSigninIndexRoute
-  authSignupIndexRoute: typeof authSignupIndexRoute
-  authSigninVerifyEmailTokenRoute: typeof authSigninVerifyEmailTokenRoute
+  authAuthRouteRoute: typeof authAuthRouteRouteWithChildren
+  authForgotPasswordRoute: typeof authForgotPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -145,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -152,60 +181,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
+    '/_protected/account': {
+      id: '/_protected/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof ProtectedAccountRouteImport
+      parentRoute: typeof ProtectedRouteRoute
+    }
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/_auth': {
+      id: '/(auth)/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof authAuthRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected/dashboard/': {
+      id: '/_protected/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard/'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof ProtectedDashboardIndexRouteImport
+      parentRoute: typeof ProtectedRouteRoute
     }
-    '/(auth)/signup/': {
-      id: '/(auth)/signup/'
+    '/(auth)/_auth/signup/': {
+      id: '/(auth)/_auth/signup/'
       path: '/signup'
       fullPath: '/signup/'
-      preLoaderRoute: typeof authSignupIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof authAuthSignupIndexRouteImport
+      parentRoute: typeof authAuthRouteRoute
     }
-    '/(auth)/signin/': {
-      id: '/(auth)/signin/'
+    '/(auth)/_auth/signin/': {
+      id: '/(auth)/_auth/signin/'
       path: '/signin'
       fullPath: '/signin/'
-      preLoaderRoute: typeof authSigninIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof authAuthSigninIndexRouteImport
+      parentRoute: typeof authAuthRouteRoute
     }
-    '/(auth)/check-email/': {
-      id: '/(auth)/check-email/'
+    '/(auth)/_auth/check-email/': {
+      id: '/(auth)/_auth/check-email/'
       path: '/check-email'
       fullPath: '/check-email/'
-      preLoaderRoute: typeof authCheckEmailIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof authAuthCheckEmailIndexRouteImport
+      parentRoute: typeof authAuthRouteRoute
     }
-    '/(auth)/signin/forgot-password': {
-      id: '/(auth)/signin/forgot-password'
-      path: '/signin/forgot-password'
-      fullPath: '/signin/forgot-password'
-      preLoaderRoute: typeof authSigninForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)/signin/verify-email/$token': {
-      id: '/(auth)/signin/verify-email/$token'
+    '/(auth)/_auth/signin/verify-email/$token': {
+      id: '/(auth)/_auth/signin/verify-email/$token'
       path: '/signin/verify-email/$token'
       fullPath: '/signin/verify-email/$token'
-      preLoaderRoute: typeof authSigninVerifyEmailTokenRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof authAuthSigninVerifyEmailTokenRouteImport
+      parentRoute: typeof authAuthRouteRoute
     }
   }
 }
 
+interface ProtectedRouteRouteChildren {
+  ProtectedAccountRoute: typeof ProtectedAccountRoute
+  ProtectedDashboardIndexRoute: typeof ProtectedDashboardIndexRoute
+}
+
+const ProtectedRouteRouteChildren: ProtectedRouteRouteChildren = {
+  ProtectedAccountRoute: ProtectedAccountRoute,
+  ProtectedDashboardIndexRoute: ProtectedDashboardIndexRoute,
+}
+
+const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
+  ProtectedRouteRouteChildren,
+)
+
+interface authAuthRouteRouteChildren {
+  authAuthCheckEmailIndexRoute: typeof authAuthCheckEmailIndexRoute
+  authAuthSigninIndexRoute: typeof authAuthSigninIndexRoute
+  authAuthSignupIndexRoute: typeof authAuthSignupIndexRoute
+  authAuthSigninVerifyEmailTokenRoute: typeof authAuthSigninVerifyEmailTokenRoute
+}
+
+const authAuthRouteRouteChildren: authAuthRouteRouteChildren = {
+  authAuthCheckEmailIndexRoute: authAuthCheckEmailIndexRoute,
+  authAuthSigninIndexRoute: authAuthSigninIndexRoute,
+  authAuthSignupIndexRoute: authAuthSignupIndexRoute,
+  authAuthSigninVerifyEmailTokenRoute: authAuthSigninVerifyEmailTokenRoute,
+}
+
+const authAuthRouteRouteWithChildren = authAuthRouteRoute._addFileChildren(
+  authAuthRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
-  authSigninForgotPasswordRoute: authSigninForgotPasswordRoute,
-  authCheckEmailIndexRoute: authCheckEmailIndexRoute,
-  authSigninIndexRoute: authSigninIndexRoute,
-  authSignupIndexRoute: authSignupIndexRoute,
-  authSigninVerifyEmailTokenRoute: authSigninVerifyEmailTokenRoute,
+  authAuthRouteRoute: authAuthRouteRouteWithChildren,
+  authForgotPasswordRoute: authForgotPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
