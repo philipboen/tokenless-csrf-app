@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { isHTTPError } from "ky";
-import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import type { ApiResponse, AppHTTPError } from "@/lib/ky";
 import type { SignUpValues } from "@/lib/validations";
 
 import { LoadingButton } from "@/components/loading-button";
@@ -18,11 +17,20 @@ import { PasswordInput } from "@/routes/(auth)/-components/password-input";
 
 export const Route = createFileRoute("/(auth)/_auth/signup/")({
   component: SignupRC,
-  errorComponent: () => <div className="p-4">Something went wrong!</div>,
 });
 
+const registerMutationFn = async (values: SignUpValues) => {
+  await authApi.post("register", {
+    json: {
+      firstName: values.firstname,
+      lastName: values.lastname,
+      email: values.email,
+      password: values.password,
+    },
+  });
+};
+
 function SignupRC() {
-  const [isPending, startTransition] = useTransition();
   const navigate = useNavigate();
 
   const form = useForm<SignUpValues>({
@@ -42,47 +50,26 @@ function SignupRC() {
     }
   };
 
-  const onSubmit = async (values: SignUpValues) => {
-    startTransition(async () => {
-      try {
-        await authApi
-          .post("register", {
-            json: {
-              firstName: values.firstname,
-              lastName: values.lastname,
-              email: values.email,
-              password: values.password,
-            },
-            // credentials: "include",
-          })
-          .json<ApiResponse<{ id: string; surname: string }>>();
-
-        form.reset();
-        navigate({ to: "/check-email", search: { type: "account-creation" } });
-      } catch (error) {
-        if (isHTTPError(error)) {
-          const code = (error as AppHTTPError).data?.error.code;
-
-          if (code === "DUPLICATE_EMAIL") {
-            toast.error("Email already in use", {
-              description:
-                "An account with this email already exists. Please use a different email or sign in.",
-            });
-            return;
-          }
-
-          toast.error("Signup failed", {
-            description: "Something went wrong. Please try again later.",
+  const { isPending, mutate } = useMutation({
+    mutationFn: registerMutationFn,
+    onSuccess: () => navigate({ to: "/check-email", search: { type: "account-creation" } }),
+    onError: (error) => {
+      if (isHTTPError(error)) {
+        const code = (error as any).data?.error?.code;
+        if (code === "DUPLICATE_EMAIL") {
+          return toast.error("Email already in use", {
+            description: "An account with this email already exists.",
           });
-          return;
         }
-
-        toast.error("Network error", {
-          description: "Could not reach the server. Please try again later.",
+        toast.error("Signup failed", {
+          description: "Something went wrong. Please try again later.",
         });
       }
-    });
-  };
+      toast.error("Network error", {
+        description: "Could not reach the server! Check your connection.",
+      });
+    },
+  });
 
   return (
     <CardWrapper
@@ -92,7 +79,7 @@ function SignupRC() {
       switchButtonHref="/signin"
       switchButtonDescription="Already have an account?"
     >
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit((values) => mutate(values))}>
         <FieldGroup>
           <div className="space-y-4">
             <div className="flexBetween gap-2 flex-col sm:flex-row space-y-4 sm:space-y-0">

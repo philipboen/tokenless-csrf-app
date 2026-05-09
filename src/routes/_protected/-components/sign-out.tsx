@@ -1,27 +1,38 @@
-import { useRouteContext, useRouter } from "@tanstack/react-router";
+import { useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { toast } from "@/components/toast-wrapper";
 import { Button } from "@/components/ui/button";
-import { authApi, isHTTPError } from "@/lib/ky";
+import { isHTTPError } from "@/lib/ky";
+import { useAuthStore } from "@/stores/authStore";
 
 export const SignOutButton = () => {
   const [pending, setPending] = useState(false);
-  const { setAuth } = useRouteContext({ from: "/_protected/dashboard/" });
   const router = useRouter();
+
+  const logout = useAuthStore((state) => state.logout);
 
   const handleSignOut = async () => {
     try {
       setPending(true);
-      await authApi.post("logout");
+      await logout();
     } catch (error) {
-      if (!isHTTPError(error)) toast.error("Network error during signout");
+      if (isHTTPError(error) && (error.response.status === 401 || error.response.status === 403)) {
+        // no operation needed
+      } else if (isHTTPError(error)) {
+        toast.error("Logout failed", {
+          description: "Could not sign out. Please try again.",
+        });
+      } else {
+        toast.error("Network error", {
+          description: "Could not reach the server.",
+        });
+      }
     } finally {
       setPending(false);
-      setAuth({ user: null, isAuthenticated: false });
       router.navigate({
         to: "/signin",
-        search: { redirect: "/_protected/dashboard/" },
+        search: { redirect: "/dashboard" },
         // Prevents going back to protected route after sign-out
         replace: true,
       });

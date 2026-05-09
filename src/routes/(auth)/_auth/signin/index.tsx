@@ -1,10 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { isHTTPError } from "ky";
-import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
-import type { AppHTTPError } from "@/lib/ky";
 import type { LoginValues } from "@/lib/validations";
 
 import { LoadingButton } from "@/components/loading-button";
@@ -12,11 +11,11 @@ import { toast } from "@/components/toast-wrapper";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { getAuthState } from "@/lib/auth";
 import { authApi } from "@/lib/ky";
 import { loginSchema } from "@/lib/validations";
 import { CardWrapper } from "@/routes/(auth)/-components/card-wrapper";
 import { PasswordInput } from "@/routes/(auth)/-components/password-input";
+import { useAuthStore } from "@/stores/authStore";
 
 export const Route = createFileRoute("/(auth)/_auth/signin/")({
   validateSearch: (search) => ({
@@ -25,11 +24,19 @@ export const Route = createFileRoute("/(auth)/_auth/signin/")({
   component: SigninRC,
 });
 
+const loginMutationFn = async (values: LoginValues) => {
+  await authApi.post("/login", {
+    json: {
+      email: values.email,
+      password: values.password,
+    },
+  });
+  // update Zustand store after login
+  await useAuthStore.getState().fetchAuthState();
+};
+
 function SigninRC() {
-  const [isPending, startTransition] = useTransition();
   const navigate = useNavigate();
-  const { setAuth } = Route.useRouteContext();
-  const router = useRouter();
   const { redirect } = Route.useSearch();
 
   const form = useForm<LoginValues>({
@@ -46,51 +53,28 @@ function SigninRC() {
     }
   };
 
-  const onSubmit = async (values: LoginValues) => {
-    startTransition(async () => {
-      try {
-        await authApi.post("/login", {
-          json: {
-            email: values.email,
-            password: values.password,
-          },
-        });
-
-        form.reset();
-        const newAuth = await getAuthState();
-        setAuth(newAuth);
-        await router.invalidate();
-        const redirectTo =
-          redirect && typeof redirect === "string" && redirect.startsWith("/")
-            ? redirect
-            : "/dashboard";
-        navigate({ to: redirectTo });
-      } catch (error) {
-        if (isHTTPError(error)) {
-          const code = (error as AppHTTPError).data?.error.code;
-
-          if (code === "INVALID_CREDENTIALS") {
-            toast.error("Invalid email or password");
-            return;
-          }
-
-          if (code === "EMAIL_NOT_VERIFIED") {
-            navigate({ to: "/check-email", search: { type: "account-creation" } });
-            return;
-          }
-
-          toast.error("Signup failed", {
-            description: "Something went wrong. Please try again later.",
-          });
-          return;
+  const { isPending, mutate } = useMutation({
+    mutationFn: loginMutationFn,
+    onSuccess: () => {
+      const redirectTo =
+        redirect && typeof redirect === "string" && redirect.startsWith("/")
+          ? redirect
+          : "/dashboard";
+      navigate({ to: redirectTo });
+    },
+    onError: (error) => {
+      if (isHTTPError(error)) {
+        const code = (error as any).data?.error?.code;
+        if (code === "INVALID_CREDENTIALS") return toast.error("Invalid email or password");
+        if (code === "EMAIL_NOT_VERIFIED") {
+          return navigate({ to: "/check-email", search: { type: "account-creation" } });
         }
-
-        toast.error("Network error", {
-          description: "Could not reach the server. Please try again later.",
-        });
       }
-    });
-  };
+      toast.error("Network error", {
+        description: "Could not reach the server! Check your connection.",
+      });
+    },
+  });
 
   return (
     <CardWrapper
@@ -100,7 +84,7 @@ function SigninRC() {
       switchButtonHref="/signup"
       switchButtonDescription="Don't have an account?"
     >
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit((values) => mutate(values))}>
         <FieldGroup>
           <div className="space-y-4">
             <Controller

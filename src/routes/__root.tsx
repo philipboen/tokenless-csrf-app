@@ -1,22 +1,35 @@
-import type { RouterContext } from "@tanstack/react-router";
-
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 
+// Initialize TanStack Query client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, refetchOnWindowFocus: false },
+    mutations: { retry: 0 },
+  },
+});
+
 const RootLayout = () => (
-  <>
+  <QueryClientProvider client={queryClient}>
     <div className="max-container">
       <Outlet />
     </div>
     <Toaster position="top-center" />
-    {import.meta.env.MODE === "development" && <TanStackRouterDevtools />}
-  </>
+    {import.meta.env.MODE === "development" && (
+      <>
+        <TanStackRouterDevtools />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </>
+    )}
+  </QueryClientProvider>
 );
 
-export const Route = createRootRouteWithContext<RouterContext>()({
+export const Route = createRootRoute({
   component: RootLayout,
   errorComponent: ({ error }) => {
     console.error("Root error boundary caught:", error);

@@ -3,27 +3,12 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 
-import type { AuthState } from "@/lib/auth";
-
-import { getAuthState } from "@/lib/auth";
 // Import the generated route tree
 import { routeTree } from "@/routeTree.gen";
-
-declare module "@tanstack/react-router" {
-  interface RouterContext {
-    auth: AuthState;
-    setAuth: (state: AuthState) => void;
-  }
-}
+import { useAuthStore } from "@/stores/authStore";
 
 // Create a new router instance
-const router = createRouter({
-  routeTree,
-  context: {
-    auth: { user: null, isAuthenticated: false },
-    setAuth: () => {},
-  },
-});
+const router = createRouter({ routeTree });
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -33,16 +18,13 @@ declare module "@tanstack/react-router" {
 }
 
 function App() {
-  const [auth, setAuth] = useState<AuthState>({ user: null, isAuthenticated: false });
   const [isInitialized, setIsInitialized] = useState(false);
+  const fetchAuthState = useAuthStore((state) => state.fetchAuthState);
 
   useEffect(() => {
-    // Hydrate auth state once on app mount
-    getAuthState()
-      .then((state) => setAuth(state))
-      .catch(() => setAuth({ user: null, isAuthenticated: false }))
-      .finally(() => setIsInitialized(true));
-  }, []);
+    // Initial auth check using Zustand store
+    fetchAuthState().finally(() => setIsInitialized(true));
+  }, [fetchAuthState]);
 
   // Block rendering until auth is
   // initialized to avoid stale state
@@ -52,7 +34,7 @@ function App() {
     );
   }
 
-  return <RouterProvider router={router} context={{ auth, setAuth }} />;
+  return <RouterProvider router={router} />;
 }
 
 // Render the app

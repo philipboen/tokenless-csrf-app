@@ -1,13 +1,14 @@
-import { createFileRoute, Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { isHTTPError } from "ky";
 import { useEffect, useState } from "react";
 
 import type { AppHTTPError } from "@/lib/ky";
 
 import { Button } from "@/components/ui/button";
-import { getAuthState } from "@/lib/auth";
 import { authApi } from "@/lib/ky";
 import { VerifyStateComponent } from "@/routes/(auth)/_auth/signin/verify-email/-component/verify-state";
+import { useAuthStore } from "@/stores/authStore";
 
 export const Route = createFileRoute("/(auth)/_auth/signin/verify-email/$token")({
   component: RouteComponent,
@@ -16,36 +17,36 @@ export const Route = createFileRoute("/(auth)/_auth/signin/verify-email/$token")
 export type VerifyStatus = "pending" | "success" | "invalid_token" | "error" | "network_error";
 const REDIRECT_DELAY_MS = 4_000;
 
+const verifyEmailMutationFn = async (token: string) => {
+  await Promise.all([
+    authApi.post("verify-email/activate", { json: { token } }),
+    new Promise((resolve) => setTimeout(resolve, 1200)),
+  ]);
+};
+
 function RouteComponent() {
   const { token } = Route.useParams();
   const navigate = useNavigate();
-  const router = useRouter();
-  const { setAuth } = Route.useRouteContext();
 
   const [status, setStatus] = useState<VerifyStatus>("pending");
   const [countdown, setCountdown] = useState(REDIRECT_DELAY_MS / 1000);
-  const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+  const { mutate } = useMutation({
+    mutationFn: verifyEmailMutationFn,
+    onSuccess: () => setStatus("success"),
+    onError: (error) => {
+      if (isHTTPError(error)) {
+        const code = (error as AppHTTPError).data?.error?.code;
+        setStatus(code === "INVALID_TOKEN" ? "invalid_token" : "error");
+      } else {
+        setStatus("network_error");
+      }
+    },
+  });
 
   useEffect(() => {
-    const verify = async () => {
-      try {
-        await Promise.all([
-          authApi.post("/verify-email/activate", { json: { token } }),
-          delay(1200),
-        ]);
-        setStatus("success");
-      } catch (error) {
-        if (isHTTPError(error)) {
-          const code = (error as AppHTTPError).data?.error.code;
-          setStatus(code === "INVALID_TOKEN" ? "invalid_token" : "error");
-        } else {
-          setStatus("network_error");
-        }
-      }
-    };
-
-    verify();
-  }, [token]);
+    mutate(token);
+  }, [token, mutate]);
 
   useEffect(() => {
     if (status !== "success") return;
@@ -55,9 +56,7 @@ function RouteComponent() {
     }, 1000);
     const timeout = setTimeout(async () => {
       clearInterval(interval);
-      const newAuth = await getAuthState();
-      setAuth(newAuth);
-      await router.invalidate();
+      await useAuthStore.getState().fetchAuthState();
       navigate({ to: "/dashboard" });
     }, REDIRECT_DELAY_MS);
 
@@ -65,7 +64,7 @@ function RouteComponent() {
       clearInterval(interval);
       clearTimeout(timeout);
     };
-  }, [status, navigate, router, setAuth]);
+  }, [status, navigate]);
 
   return (
     <div className="min-h-screen py-12 px-4">
