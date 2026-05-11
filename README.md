@@ -1,75 +1,48 @@
-# React + TypeScript + Vite
+## Authentication SPA (Tokenless CSRF)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, session-based React Single Page Application showcasing a tokenless CSRF authentication approach. Built with React, Vite, TypeScript, and TanStack Router.
 
-Currently, two official plugins are available:
+### Setup & Installation
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Follow these steps to get the project up and running locally.
 
-## React Compiler
+#### Prerequisites
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- Node.js (v22 or higher recommended)
+- A package manager (`bun` or `pnpm`)
+- `.env` file
 
-Note: This will impact Vite dev & build performances.
+#### 1. Install Dependencies
 
-## Expanding the ESLint configuration
+Navigate to the project directory and install the required dependencies:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# Or using bun
+bun install
 
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+# Or using pnpm
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+#### 2. Create a `.env` file
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+Create a `.env` file in the root of the project and add the following environment variables:
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```env
+VITE_API_BASE_URL=
 ```
+
+#### 3. Start the Development Server
+
+Once the dependencies are installed, you can start the Vite development server:
+
+```bash
+# Using bun
+bun run dev
+
+# Using pnpm
+pnpm run dev
+
+```
+
+The application will be served locally, typically at `http://localhost:5173/`. Your browser should be able to access the app using that link.
