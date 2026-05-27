@@ -30,15 +30,15 @@ function CheckEmailRC() {
             </CardTitle>
             <CardDescription className="text-base pt-2">
               {type === "account-creation"
-                ? "We've sent a verification link to your email address."
-                : "We've sent a password reset link to your email address."}
+                ? "A verification link has been sent to the email address, if an account with that email exists."
+                : "A password reset link has been sent to the email address, if an account with that email exists."}
             </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <p className="text-sm text-muted-foreground w-11/12 mx-auto">
             {type === "account-creation"
-              ? "Please click the link in the email to verify your account and complete the signup process. If you don't see it, you may need to check your spam folder."
+              ? "Please click the link in the email to verify the account and complete the signup process. If you don't see it, you may need to check your spam folder."
               : "Please click the link in the email to reset your password. If you don't see it, you may need to check your spam folder."}
           </p>
           <Button asChild className="w-full" size="lg">
