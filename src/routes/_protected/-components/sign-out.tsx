@@ -1,9 +1,9 @@
 import { useRouter } from "@tanstack/react-router";
+import { isHTTPError } from "ky";
 import { useState } from "react";
 
 import { toast } from "@/components/toast-wrapper";
 import { Button } from "@/components/ui/button";
-import { isHTTPError } from "@/lib/ky";
 import { useAuthStore } from "@/stores/authStore";
 
 export const SignOutButton = () => {

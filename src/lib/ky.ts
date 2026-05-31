@@ -42,4 +42,4 @@ const api = ky.create({
 
 const authApi = api.extend({ prefix: "auth" });
 
-export { api, authApi, isHTTPError };
+export { api, authApi };

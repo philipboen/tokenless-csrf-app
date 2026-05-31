@@ -13,13 +13,14 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ProtectedRouteRouteImport } from './routes/_protected/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProtectedAccountRouteImport } from './routes/_protected/account'
-import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password'
 import { Route as authAuthRouteRouteImport } from './routes/(auth)/_auth/route'
 import { Route as ProtectedDashboardIndexRouteImport } from './routes/_protected/dashboard/index'
 import { Route as authAuthSignupIndexRouteImport } from './routes/(auth)/_auth/signup/index'
 import { Route as authAuthSigninIndexRouteImport } from './routes/(auth)/_auth/signin/index'
 import { Route as authAuthCheckEmailIndexRouteImport } from './routes/(auth)/_auth/check-email/index'
+import { Route as authAuthSigninForgotPasswordRouteImport } from './routes/(auth)/_auth/signin/forgot-password'
 import { Route as authAuthSigninVerifyEmailTokenRouteImport } from './routes/(auth)/_auth/signin/verify-email/$token'
+import { Route as authAuthSigninResetPasswordTokenRouteImport } from './routes/(auth)/_auth/signin/reset-password/$token'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -39,11 +40,6 @@ const ProtectedAccountRoute = ProtectedAccountRouteImport.update({
   id: '/account',
   path: '/account',
   getParentRoute: () => ProtectedRouteRoute,
-} as any)
-const authForgotPasswordRoute = authForgotPasswordRouteImport.update({
-  id: '/(auth)/forgot-password',
-  path: '/forgot-password',
-  getParentRoute: () => rootRouteImport,
 } as any)
 const authAuthRouteRoute = authAuthRouteRouteImport.update({
   id: '/(auth)/_auth',
@@ -69,33 +65,47 @@ const authAuthCheckEmailIndexRoute = authAuthCheckEmailIndexRouteImport.update({
   path: '/check-email/',
   getParentRoute: () => authAuthRouteRoute,
 } as any)
+const authAuthSigninForgotPasswordRoute =
+  authAuthSigninForgotPasswordRouteImport.update({
+    id: '/signin/forgot-password',
+    path: '/signin/forgot-password',
+    getParentRoute: () => authAuthRouteRoute,
+  } as any)
 const authAuthSigninVerifyEmailTokenRoute =
   authAuthSigninVerifyEmailTokenRouteImport.update({
     id: '/signin/verify-email/$token',
     path: '/signin/verify-email/$token',
     getParentRoute: () => authAuthRouteRoute,
   } as any)
+const authAuthSigninResetPasswordTokenRoute =
+  authAuthSigninResetPasswordTokenRouteImport.update({
+    id: '/signin/reset-password/$token',
+    path: '/signin/reset-password/$token',
+    getParentRoute: () => authAuthRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/forgot-password': typeof authForgotPasswordRoute
   '/account': typeof ProtectedAccountRoute
   '/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/signin/forgot-password': typeof authAuthSigninForgotPasswordRoute
   '/check-email/': typeof authAuthCheckEmailIndexRoute
   '/signin/': typeof authAuthSigninIndexRoute
   '/signup/': typeof authAuthSignupIndexRoute
+  '/signin/reset-password/$token': typeof authAuthSigninResetPasswordTokenRoute
   '/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/forgot-password': typeof authForgotPasswordRoute
   '/account': typeof ProtectedAccountRoute
   '/dashboard': typeof ProtectedDashboardIndexRoute
+  '/signin/forgot-password': typeof authAuthSigninForgotPasswordRoute
   '/check-email': typeof authAuthCheckEmailIndexRoute
   '/signin': typeof authAuthSigninIndexRoute
   '/signup': typeof authAuthSignupIndexRoute
+  '/signin/reset-password/$token': typeof authAuthSigninResetPasswordTokenRoute
   '/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRoutesById {
@@ -104,12 +114,13 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/(auth)/_auth': typeof authAuthRouteRouteWithChildren
-  '/(auth)/forgot-password': typeof authForgotPasswordRoute
   '/_protected/account': typeof ProtectedAccountRoute
   '/_protected/dashboard/': typeof ProtectedDashboardIndexRoute
+  '/(auth)/_auth/signin/forgot-password': typeof authAuthSigninForgotPasswordRoute
   '/(auth)/_auth/check-email/': typeof authAuthCheckEmailIndexRoute
   '/(auth)/_auth/signin/': typeof authAuthSigninIndexRoute
   '/(auth)/_auth/signup/': typeof authAuthSignupIndexRoute
+  '/(auth)/_auth/signin/reset-password/$token': typeof authAuthSigninResetPasswordTokenRoute
   '/(auth)/_auth/signin/verify-email/$token': typeof authAuthSigninVerifyEmailTokenRoute
 }
 export interface FileRouteTypes {
@@ -117,23 +128,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
-    | '/forgot-password'
     | '/account'
     | '/dashboard/'
+    | '/signin/forgot-password'
     | '/check-email/'
     | '/signin/'
     | '/signup/'
+    | '/signin/reset-password/$token'
     | '/signin/verify-email/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/forgot-password'
     | '/account'
     | '/dashboard'
+    | '/signin/forgot-password'
     | '/check-email'
     | '/signin'
     | '/signup'
+    | '/signin/reset-password/$token'
     | '/signin/verify-email/$token'
   id:
     | '__root__'
@@ -141,12 +154,13 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/about'
     | '/(auth)/_auth'
-    | '/(auth)/forgot-password'
     | '/_protected/account'
     | '/_protected/dashboard/'
+    | '/(auth)/_auth/signin/forgot-password'
     | '/(auth)/_auth/check-email/'
     | '/(auth)/_auth/signin/'
     | '/(auth)/_auth/signup/'
+    | '/(auth)/_auth/signin/reset-password/$token'
     | '/(auth)/_auth/signin/verify-email/$token'
   fileRoutesById: FileRoutesById
 }
@@ -155,7 +169,6 @@ export interface RootRouteChildren {
   ProtectedRouteRoute: typeof ProtectedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   authAuthRouteRoute: typeof authAuthRouteRouteWithChildren
-  authForgotPasswordRoute: typeof authForgotPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -187,13 +200,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/account'
       preLoaderRoute: typeof ProtectedAccountRouteImport
       parentRoute: typeof ProtectedRouteRoute
-    }
-    '/(auth)/forgot-password': {
-      id: '/(auth)/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof authForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/(auth)/_auth': {
       id: '/(auth)/_auth'
@@ -230,11 +236,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authAuthCheckEmailIndexRouteImport
       parentRoute: typeof authAuthRouteRoute
     }
+    '/(auth)/_auth/signin/forgot-password': {
+      id: '/(auth)/_auth/signin/forgot-password'
+      path: '/signin/forgot-password'
+      fullPath: '/signin/forgot-password'
+      preLoaderRoute: typeof authAuthSigninForgotPasswordRouteImport
+      parentRoute: typeof authAuthRouteRoute
+    }
     '/(auth)/_auth/signin/verify-email/$token': {
       id: '/(auth)/_auth/signin/verify-email/$token'
       path: '/signin/verify-email/$token'
       fullPath: '/signin/verify-email/$token'
       preLoaderRoute: typeof authAuthSigninVerifyEmailTokenRouteImport
+      parentRoute: typeof authAuthRouteRoute
+    }
+    '/(auth)/_auth/signin/reset-password/$token': {
+      id: '/(auth)/_auth/signin/reset-password/$token'
+      path: '/signin/reset-password/$token'
+      fullPath: '/signin/reset-password/$token'
+      preLoaderRoute: typeof authAuthSigninResetPasswordTokenRouteImport
       parentRoute: typeof authAuthRouteRoute
     }
   }
@@ -255,16 +275,20 @@ const ProtectedRouteRouteWithChildren = ProtectedRouteRoute._addFileChildren(
 )
 
 interface authAuthRouteRouteChildren {
+  authAuthSigninForgotPasswordRoute: typeof authAuthSigninForgotPasswordRoute
   authAuthCheckEmailIndexRoute: typeof authAuthCheckEmailIndexRoute
   authAuthSigninIndexRoute: typeof authAuthSigninIndexRoute
   authAuthSignupIndexRoute: typeof authAuthSignupIndexRoute
+  authAuthSigninResetPasswordTokenRoute: typeof authAuthSigninResetPasswordTokenRoute
   authAuthSigninVerifyEmailTokenRoute: typeof authAuthSigninVerifyEmailTokenRoute
 }
 
 const authAuthRouteRouteChildren: authAuthRouteRouteChildren = {
+  authAuthSigninForgotPasswordRoute: authAuthSigninForgotPasswordRoute,
   authAuthCheckEmailIndexRoute: authAuthCheckEmailIndexRoute,
   authAuthSigninIndexRoute: authAuthSigninIndexRoute,
   authAuthSignupIndexRoute: authAuthSignupIndexRoute,
+  authAuthSigninResetPasswordTokenRoute: authAuthSigninResetPasswordTokenRoute,
   authAuthSigninVerifyEmailTokenRoute: authAuthSigninVerifyEmailTokenRoute,
 }
 
@@ -277,7 +301,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRouteRoute: ProtectedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   authAuthRouteRoute: authAuthRouteRouteWithChildren,
-  authForgotPasswordRoute: authForgotPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

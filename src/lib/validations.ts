@@ -41,3 +41,27 @@ export const checkEmailSchema = z.object({
 });
 
 export type CheckEmailValues = z.infer<typeof checkEmailSchema>;
+
+export const forgotPasswordSchema = z.object({
+  email: z.email("Invalid email address").min(1, "Email is required"),
+});
+
+export type ForgotPassword = z.infer<typeof forgotPasswordSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    password: requiredString
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z])/,
+        "Password must contain a lowercase letter, an uppercase letter, a number and a special character",
+      )
+      .max(32, "Password is too long"),
+    confirmPassword: requiredString,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;

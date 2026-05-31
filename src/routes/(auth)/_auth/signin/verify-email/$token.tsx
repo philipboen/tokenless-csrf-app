@@ -4,6 +4,7 @@ import { isHTTPError } from "ky";
 import { useEffect, useState } from "react";
 
 import type { AppHTTPError } from "@/lib/ky";
+import type { VerifyStatus } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/ky";
@@ -14,7 +15,6 @@ export const Route = createFileRoute("/(auth)/_auth/signin/verify-email/$token")
   component: RouteComponent,
 });
 
-export type VerifyStatus = "pending" | "success" | "invalid_token" | "error" | "network_error";
 const REDIRECT_DELAY_MS = 4_000;
 
 const verifyEmailMutationFn = async (token: string) => {

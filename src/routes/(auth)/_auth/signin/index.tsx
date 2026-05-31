@@ -131,7 +131,7 @@ function SigninRC() {
             />
             <div className="flex justify-end">
               <Button variant="link" className="px-0 text-right" asChild>
-                <Link to="/forgot-password">Forgot password?</Link>
+                <Link to="/signin/forgot-password">Forgot password?</Link>
               </Button>
             </div>
             <LoadingButton
