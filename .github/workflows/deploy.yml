@@ -6,18 +6,18 @@ on:
     paths-ignore:
       - "**.md"
       - ".vscode/**"
-      - ".prettierignore"
-      - ".prettierrc"
-      - "components.json"
+      - .prettierignore
+      - .prettierrc
+      - components.json
 
   push:
     branches: [main]
     paths-ignore:
       - "**.md"
       - ".vscode/**"
-      - ".prettierignore"
-      - ".prettierrc"
-      - "components.json"
+      - .prettierignore
+      - .prettierrc
+      - components.json
 
 env:
   NODE_VERSION: 24.16.0
